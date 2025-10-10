@@ -73,7 +73,7 @@ block-auction/
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/marisatomei/block-auction.git
    cd block-auction
    ```
 
@@ -319,7 +319,7 @@ npm run dev:setup
 
 ## Security Considerations
 
-- ✅ Checks-Effects-Interactions pattern in withdrawal
+- ✅ Checks-Effects-Interactions pattern in withdrawal and claimFunds
 - ✅ Reentrancy protection
 - ✅ Custom errors for gas efficiency
 - ✅ No owner privileges (fully decentralized)
@@ -341,7 +341,6 @@ MIT
 
 For issues and questions:
 - Create an issue on GitHub
-- Check existing documentation in `/docs`
 - Review test files for usage examples
 
 ---
