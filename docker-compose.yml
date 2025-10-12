@@ -22,7 +22,7 @@ services:
       - hardhat-network
     environment:
       - NODE_ENV=development
-    command: npx hardhat node --hostname 0.0.0.0 --mining-interval 1000
+    command: npx hardhat node --hostname 0.0.0.0
 
   # Container for running tests
   hardhat-test:
