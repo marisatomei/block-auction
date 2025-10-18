@@ -12,7 +12,7 @@
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f hardhat",
     "docker:restart": "docker compose restart hardhat",
-    "docker:sync": "docker cp hardhat-node:/app/src/utils/abis.js src/utils/abis.js && docker cp hardhat-node:/app/src/constants/config.js src/constants/config.js && echo Synced generated files from container!",
+    "docker:sync": "docker cp block-auction-hardhat-node:/app/src/utils/abis.js src/utils/abis.js && docker cp block-auction-hardhat-node:/app/src/constants/config.js src/constants/config.js && echo Synced generated files from container!",
     "hardhat:compile": "docker compose exec hardhat npx hardhat compile",
     "hardhat:test": "docker compose run --rm hardhat-test",
     "hardhat:deploy": "docker compose exec hardhat npx hardhat run scripts/deploy.js --network localhost && npm run docker:sync",
