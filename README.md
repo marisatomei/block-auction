@@ -65,9 +65,13 @@ block-auction/
 
 ### Prerequisites
 
-- Node.js 20+
-- Docker & Docker Compose
-- MetaMask browser extension
+Make sure you have the following installed:
+
+- **Node.js 20+** - [Download here](https://nodejs.org/)
+- **Docker Desktop** - [Download here](https://www.docker.com/products/docker-desktop/)
+- **MetaMask** - [Install browser extension](https://metamask.io/)
+
+> **Important:** Ensure Docker Desktop is **running** before proceeding with installation.
 
 ### Installation
 
@@ -82,63 +86,65 @@ block-auction/
    npm install
    ```
 
-3. **Set up environment variables**
+3. **Set up development environment**
    ```bash
-   cp .env .env.local
+   npm run dev:setup
    ```
 
-   Edit `.env` if needed (defaults are fine for local development).
+   This command will:
+   - Build the Docker image for Hardhat
+   - Start the Hardhat node (local blockchain)
+   - Compile the smart contracts
+   - Deploy contracts to the local network
+   - Auto-generate `src/constants/config.js` and `src/utils/abis.js`
 
-### Development Workflow
-
-#### Option 1: Quick Start (Recommended)
-
-```bash
-# Build Docker image, start Hardhat node, compile & deploy contracts
-npm run dev:setup
-
-# In another terminal, start Next.js
-npm run dev
-```
-
-Then open [http://localhost:3000](http://localhost:3000)
-
-#### Option 2: Step-by-Step
-
-1. **Build Docker image**
-   ```bash
-   npm run docker:build
+   Wait for completion. You should see:
+   ```
+   ✓ AuctionFactory deployed to: 0x5FbDB2315678afecb367f032d93F642f64180aa3
+   ✓ Config saved to: src/constants/config.js
+   ✓ ABIs saved to: src/utils/abis.js
+   Synced generated files from container!
    ```
 
-2. **Start Hardhat node**
-   ```bash
-   npm run docker:up
-   ```
+4. **Start Next.js development server**
 
-3. **Compile contracts**
-   ```bash
-   npm run hardhat:compile
-   ```
-
-4. **Deploy contracts**
-   ```bash
-   npm run hardhat:deploy
-   ```
-   This will auto-generate:
-   - `src/constants/config.js` (contract addresses)
-   - `src/utils/abis.js` (contract ABIs)
-
-5. **Start Next.js app**
+   Open a **new terminal window** and run:
    ```bash
    npm run dev
    ```
 
-6. **View Hardhat logs** (optional)
-   ```bash
-   npm run docker:logs
-   ```
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+   > **Note:** For BSC Testnet deployment, create a `.env` file from `.env.example` and add your private key.
+
+5. **Configure MetaMask**
+
+   **Add Hardhat Local Network:**
+   1. Open MetaMask browser extension
+   2. Click network dropdown → **Add Network** → **Add network manually**
+   3. Enter:
+      - **Network Name:** `Hardhat Local`
+      - **RPC URL:** `http://127.0.0.1:8545`
+      - **Chain ID:** `31337`
+      - **Currency Symbol:** `ETH`
+   4. Click **Save** and switch to Hardhat Local network
+
+   **Import Test Account:**
+   1. Run `npm run docker:logs` to see test accounts
+   2. Copy the **Private Key** of Account #0 (has 10,000 ETH)
+   3. MetaMask → Account icon → **Import Account**
+   4. Paste the private key and import
+   5. You should now see 10,000 ETH in your wallet
+
+6. **Start using the DApp**
+
+   - Visit [http://localhost:3000](http://localhost:3000)
+   - Click **"Connect Wallet"** and approve in MetaMask
+   - Create your first auction!
 
 ### Testing
+
+Verify your setup by running the test suite:
 
 #### Run all tests
 ```bash
@@ -155,85 +161,69 @@ docker-compose run --rm hardhat-test npx hardhat test --watch
 docker-compose exec hardhat npx hardhat coverage
 ```
 
-## MetaMask Setup
-
-### For Local Development (Hardhat)
-
-1. Open MetaMask → Networks → Add Network
-2. Enter the following:
-   - **Network Name:** Hardhat Local
-   - **RPC URL:** http://127.0.0.1:8545
-   - **Chain ID:** 31337
-   - **Currency Symbol:** ETH
-
-3. Import a test account:
-   - Check Docker logs: `npm run docker:logs`
-   - Copy a private key from the account list
-   - MetaMask → Import Account → Paste private key
-
-### For BSC Testnet (Production)
-
-1. Add BSC Testnet to MetaMask:
-   - **Network Name:** BSC Testnet
-   - **RPC URL:** https://data-seed-prebsc-1-s1.binance.org:8545/
-   - **Chain ID:** 97
-   - **Currency Symbol:** tBNB
-   - **Block Explorer:** https://testnet.bscscan.com/
-
-2. Get testnet BNB:
-   - Visit: https://testnet.bnbchain.org/faucet-smart
-   - Enter your wallet address
-   - Request tBNB
-
 ## Deployment to BSC Testnet
 
-1. **Update .env with your private key**
-   ```env
-   PRIVATE_KEY=your_private_key_here
-   BSC_TESTNET_RPC=https://data-seed-prebsc-1-s1.binance.org:8545/
+**Prerequisites:**
+- MetaMask with BSC Testnet network configured:
+  - **Network Name:** BSC Testnet
+  - **RPC URL:** https://data-seed-prebsc-1-s1.binance.org:8545/
+  - **Chain ID:** 97
+  - **Currency Symbol:** tBNB
+  - **Block Explorer:** https://testnet.bscscan.com/
+- Get testnet BNB from: https://testnet.bnbchain.org/faucet-smart
+
+**Deployment Steps:**
+
+1. **Create .env file from example**
+   ```bash
+   cp .env.example .env
    ```
 
-2. **Deploy to BSC Testnet**
+2. **Update .env with your private key**
+   ```env
+   PRIVATE_KEY=your_private_key_here_without_0x_prefix
+   ```
+
+3. **Deploy to BSC Testnet**
    ```bash
    npm run hardhat:deploy:testnet
    ```
 
-3. **Update Next.js environment**
+4. **Update Next.js environment**
    ```env
    NEXT_PUBLIC_USE_LOCAL=false
    ```
 
-4. **Restart Next.js**
+5. **Restart Next.js**
    ```bash
    npm run dev
    ```
 
-## Available NPM Scripts
+## Available Commands
 
-### Docker Commands
+### Quick Shortcuts
+- `npm run dev:setup` - **Full setup** (build Docker, start node, compile & deploy)
+- `npm run dev` - Start Next.js development server
+
+### Docker Management
 - `npm run docker:build` - Build Docker image
 - `npm run docker:up` - Start Hardhat node
 - `npm run docker:down` - Stop containers
-- `npm run docker:logs` - View Hardhat logs
+- `npm run docker:logs` - View Hardhat node logs
 - `npm run docker:restart` - Restart Hardhat node
 
-### Hardhat Commands
-- `npm run hardhat:compile` - Compile contracts
-- `npm run hardhat:test` - Run tests
-- `npm run hardhat:deploy` - Deploy to local network
+### Contract Development
+- `npm run hardhat:compile` - Compile smart contracts
+- `npm run hardhat:test` - Run all tests
+- `npm run hardhat:deploy` - Deploy to local network (auto-syncs files)
 - `npm run hardhat:deploy:testnet` - Deploy to BSC Testnet
-- `npm run hardhat:clean` - Clean artifacts
+- `npm run hardhat:clean` - Clean compiled artifacts
 - `npm run hardhat:console` - Open Hardhat console
 
-### Next.js Commands
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
+### Frontend Development
+- `npm run build` - Build Next.js for production
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
-
-### Workflow Shortcuts
-- `npm run dev:all` - Start Hardhat + Next.js
-- `npm run dev:setup` - Full setup (build, deploy, compile)
 
 ## Smart Contract Architecture
 
@@ -288,34 +278,68 @@ Factory contract to create and manage auctions:
 
 ## Troubleshooting
 
+### Docker is not running
+**Error:** `Cannot connect to the Docker daemon`
+
+**Solution:** Start Docker Desktop and wait for it to fully initialize, then try again.
+
+### Port 8545 already in use
+**Error:** `bind: address already in use`
+
+**Solution:**
+```bash
+npm run docker:down
+npm run docker:up
+```
+
+### Hardhat node not responding
+**Solution:**
+```bash
+npm run docker:restart
+```
+
 ### Contract compilation fails
+**Solution:**
 ```bash
 npm run hardhat:clean
 npm run docker:restart
 npm run hardhat:compile
 ```
 
-### MetaMask shows wrong network
-- Check that you're connected to "Hardhat Local" (Chain ID: 31337)
-- Or "BSC Testnet" (Chain ID: 97) for production
+### Contracts not found in frontend
+**Error:** `Contract not deployed on this network`
 
-### Deployment fails
-- Ensure Hardhat node is running: `npm run docker:logs`
-- Check that Docker containers are up: `docker ps`
+**Solution:** Redeploy and sync:
+```bash
+npm run hardhat:deploy
+```
+
+### MetaMask shows wrong network
+- Make sure you're connected to **"Hardhat Local"** (Chain ID: 31337) for local development
+- Or **"BSC Testnet"** (Chain ID: 97) for production
+
+### Nonce too high error
+This happens when you reset the blockchain but MetaMask still has old transaction history.
+
+**Solution:**
+1. MetaMask → Settings → Advanced
+2. Scroll down and click **"Clear activity tab data"**
+3. Reconnect your wallet
 
 ### Transaction fails
 - Check account has sufficient balance
 - Verify you're on the correct network
 - Check browser console for error messages
 
-### Docker issues
+### Complete reset (if all else fails)
 ```bash
-# Complete reset
 npm run docker:down
 docker-compose down -v
-npm run docker:build
+rm -rf artifacts cache src/constants/config.js src/utils/abis.js
 npm run dev:setup
 ```
+
+Then reset MetaMask activity data as described above.
 
 ## Security Considerations
 
